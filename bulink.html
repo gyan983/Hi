@@ -20,7 +20,7 @@
             text-align: center;
             padding: 10px;
             color: white;
-            border-bottom: 2px solid #FFB6C1; /* Line under the header */
+            border-bottom: 2px solid #FFB6C1;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -59,36 +59,34 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin: 20px 20px; /* Added gap on both sides */
-            border: 2px solid #FFB6C1; /* Border around section */
+            margin: 20px 20px;
+            border: 2px solid #FFB6C1;
             padding: 20px;
-            width: 95%; /* Ensures the section fits within the page width */
-            max-width: 1200px; /* Max width to prevent stretching */
-            box-sizing: border-box; /* Prevents the border from affecting the section's width */
+            width: 95%;
+            max-width: 1200px;
+            box-sizing: border-box;
         }
 
         .section-title {
             font-size: 1.5rem;
             margin-bottom: 10px;
             color: #FF69B4;
-            border-bottom: 1px solid #FFB6C1; /* Line under section title */
+            border-bottom: 1px solid #FFB6C1;
             padding-bottom: 5px;
         }
 
         .button-container {
             display: grid;
-            grid-template-columns: repeat(3, 126px);
-            grid-template-rows: repeat(7, 55px);
-            gap: 10px;
-            padding: 20px;
-            justify-content: center;
-            align-items: center;
+            grid-template-columns: repeat(3, 1fr); /* 3 buttons per row */
+            gap: 10px; /* Space between buttons */
+            width: 100%;
+            padding: 10px;
         }
 
         .button-wrapper {
             position: relative;
             display: inline-block;
-            width: 126px;
+            width: 100%;
             height: 55px;
         }
 
@@ -127,12 +125,18 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            opacity: 0.5; /* 50% opacity for the dot menu */
+            opacity: 0.5;
         }
 
         .dot-menu:hover {
             background-color: #f0f0f0;
-            opacity: 1; /* Full opacity on hover */
+            opacity: 1;
+        }
+
+        hr {
+            width: 90%;
+            border: 1px solid #FF69B4;
+            margin: 20px 0;
         }
 
         /* Popup Styles */
@@ -191,121 +195,109 @@
             background-color: #ADD8E6;
         }
 
-        /* Styling for the line between sections */
-        hr {
-            width: 90%;
-            border: 1px solid #FF69B4;
-            margin: 20px 0;
-        }
     </style>
 </head>
 <body>
 
 <header>
     <h1>Buttons Links</h1>
-       <button class="return-btn" onclick="window.location.href='note.html'">Return</button>
+    <button class="return-btn" onclick="window.location.href='note.html'">Return</button>
 </header>
 
- <div class="section-container">
-        <h2>Save your important links in button format.</h2>
-    </div>
 <div class="section-container">
     <h2 class="section-title">💬Regular Links🖇️</h2>
-    <div class="button-container" id="regularLinksContainer"></div>
+    <div class="button-container" id="regularLinksContainer">
+        <!-- 50 buttons for regular links -->
+        <script>
+            for (let i = 1; i <= 50; i++) {
+                document.getElementById('regularLinksContainer').innerHTML += `
+                    <div class="button-wrapper" id="button${i}-wrapper">
+                        <button class="button pink-button" id="button${i}">Button ${i}</button>
+                        <div class="dot-menu" onclick="openPopup(${i})"><span>...</span></div>
+                    </div>
+                `;
+            }
+        </script>
+    </div>
 </div>
 
 <hr> <!-- Line between sections -->
 
 <div class="section-container">
     <h2 class="section-title">🔥Important Links🖇️</h2>
-    <div class="button-container" id="importantLinksContainer"></div>
+    <div class="button-container" id="importantLinksContainer">
+        <!-- 50 buttons for important links -->
+        <script>
+            for (let i = 51; i <= 100; i++) {
+                document.getElementById('importantLinksContainer').innerHTML += `
+                    <div class="button-wrapper" id="button${i}-wrapper">
+                        <button class="button blue-button" id="button${i}">Button ${i}</button>
+                        <div class="dot-menu" onclick="openPopup(${i})"><span>...</span></div>
+                    </div>
+                `;
+            }
+        </script>
+    </div>
 </div>
 
 <footer>
     &copy; 2025 Kanya's World. All Rights Reserved.
 </footer>
 
-<!-- Popup Overlay -->
+<!-- Popup for renaming and adding links -->
 <div class="popup-overlay" id="popupOverlay">
-    <div class="popup" id="popup">
-        <h3>Edit Button</h3>
+    <div class="popup">
+        <h3>Rename and Add Link</h3>
         <input type="text" id="buttonNameInput" placeholder="Enter new name">
-        <input type="text" id="buttonLinkInput" placeholder="Enter new link">
-        <button class="save-btn" id="saveButton">Save</button>
-        <button class="close-btn" id="closeButton">Cancel</button>
+        <input type="url" id="buttonLinkInput" placeholder="Enter link URL">
+        <button class="save-btn" onclick="saveChanges()">Save</button>
+        <button class="close-btn" onclick="closePopup()">Close</button>
     </div>
 </div>
 
 <script>
-    // Function to render buttons with menu functionality
-    function renderButtons(containerId, buttonsData, buttonClass) {
-        const container = document.getElementById(containerId);
-        container.innerHTML = ''; // Clear container before rendering
-        buttonsData.forEach((button, index) => {
-            const buttonWrapper = document.createElement('div');
-            buttonWrapper.classList.add('button-wrapper');
+    const popupOverlay = document.getElementById('popupOverlay');
+    const buttonNameInput = document.getElementById('buttonNameInput');
+    const buttonLinkInput = document.getElementById('buttonLinkInput');
+    let currentButtonId = null;
 
-            const buttonElement = document.createElement('button');
-            buttonElement.classList.add('button', buttonClass);
-            buttonElement.innerText = button.name;
-            buttonElement.onclick = () => {
-                window.open(button.link || 'https://www.fb.com', '_blank');
-            };
-
-            const dotMenu = document.createElement('div');
-            dotMenu.classList.add('dot-menu');
-            dotMenu.innerText = '⋮';
-            dotMenu.onclick = () => openPopup(button, buttonClass);
-
-            buttonWrapper.append(buttonElement, dotMenu);
-            container.appendChild(buttonWrapper);
-        });
-    }
-
-    // Open Popup for Editing
-    function openPopup(button, buttonClass) {
-        const popup = document.getElementById('popup');
-        const popupOverlay = document.getElementById('popupOverlay');
-        const buttonNameInput = document.getElementById('buttonNameInput');
-        const buttonLinkInput = document.getElementById('buttonLinkInput');
-        const saveButton = document.getElementById('saveButton');
-
-        popup.classList.toggle('blue-popup', buttonClass === 'blue-button');
-        buttonNameInput.value = button.name;
-        buttonLinkInput.value = button.link;
+    // Open popup and prefill the data
+    function openPopup(buttonId) {
+        currentButtonId = buttonId;
+        const button = document.getElementById('button' + buttonId);
+        buttonNameInput.value = button.innerText;
+        buttonLinkInput.value = localStorage.getItem('link' + buttonId) || '';
         popupOverlay.style.display = 'flex';
-
-        saveButton.onclick = () => {
-            button.name = buttonNameInput.value;
-            button.link = buttonLinkInput.value;
-            renderButtons('regularLinksContainer', regularLinksData, 'pink-button');
-            renderButtons('importantLinksContainer', importantLinksData, 'blue-button');
-            closePopup();
-        };
     }
 
-    // Close Popup
+    // Close the popup
     function closePopup() {
-        document.getElementById('popupOverlay').style.display = 'none';
+        popupOverlay.style.display = 'none';
     }
 
-    document.getElementById('closeButton').onclick = closePopup;
+    // Save changes to the button name and link in localStorage
+    function saveChanges() {
+        const button = document.getElementById('button' + currentButtonId);
+        button.innerText = buttonNameInput.value;
+        localStorage.setItem('link' + currentButtonId, buttonLinkInput.value);
+        
+        // Update the click event to open the saved link
+        button.onclick = () => window.location.href = buttonLinkInput.value;
+        
+        closePopup();
+    }
 
-    // Regular Links Data
-    const regularLinksData = Array.from({ length: 21 }, (_, i) => ({
-        name: `Button ${i + 1}`,
-        link: 'https://www.fb.com',
-    }));
-
-    // Important Links Data
-    const importantLinksData = Array.from({ length: 21 }, (_, i) => ({
-        name: `Button ${i + 1}`,
-        link: 'https://www.fb.com',
-    }));
-
-    // Render Buttons
-    renderButtons('regularLinksContainer', regularLinksData, 'pink-button');
-    renderButtons('importantLinksContainer', importantLinksData, 'blue-button');
+    // Load saved links on page load
+    window.onload = function() {
+        for (let i = 1; i <= 100; i++) {
+            const link = localStorage.getItem('link' + i);
+            const button = document.getElementById('button' + i);
+            if (link) {
+                // Assign the saved link to the button's click event
+                button.onclick = () => window.location.href = link;
+            }
+        }
+    };
 </script>
 
 </body>
